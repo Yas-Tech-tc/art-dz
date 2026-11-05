@@ -1,0 +1,18 @@
+export const sampleProducts = [
+  { name: "Miroir décoratif en cuivre martelé", category: "maison-decoration", price: 6500, stock: 4, featured: true, materials: "Cuivre, verre", dimensions: "Ø 40 cm", description: "Miroir rond encadré de cuivre martelé à la main." },
+  { name: "Panier mural en raphia", category: "maison-decoration", price: 2800, stock: 8, isNewArrival: true, materials: "Raphia naturel", dimensions: "Ø 35 cm", description: "Panier mural tressé à la main." },
+  { name: "Tasse en céramique, calligraphie fine", category: "art-de-la-table", price: 1200, stock: 15, materials: "Céramique émaillée", dimensions: "H 9 cm, 25 cl", description: "Tasse peinte à la main, ornée d'une calligraphie délicate." },
+  { name: "Sous-plat bois et faïence peinte", category: "art-de-la-table", price: 2500, stock: 3, featured: true, isNewArrival: true, materials: "Bois, faïence", dimensions: "20 x 20 cm", description: "Sous-plat en bois sombre serti d'une faïence illustrée à la main.", imageUrl: "/images/products/test1.png", images: ["/images/products/test1.png", "/images/products/test2.png", "/images/products/test3.png"] },
+  { name: "Vase en terre cuite", category: "poterie-ceramique", price: 3200, stock: 5, materials: "Terre cuite", dimensions: "H 28 cm", description: "Vase en terre cuite aux lignes simples." },
+  { name: "Jarre à couvercle", category: "poterie-ceramique", price: 3800, stock: 0, materials: "Terre cuite émaillée", dimensions: "H 24 cm", description: "Jarre traditionnelle avec son couvercle." },
+  { name: "Sac en cuir, motifs berbères", category: "mode-maroquinerie", price: 8500, stock: 2, featured: true, materials: "Cuir véritable", dimensions: "30 x 25 x 10 cm", description: "Sac en cuir orné de motifs berbères." },
+  { name: "Gandoura brodée, col vert", category: "mode-maroquinerie", price: 9000, stock: 3, featured: true, isNewArrival: true, materials: "Lin, broderie", dimensions: "Taille unique", description: "Tenue en lin rayé avec col brodé vert." },
+  { name: "Collier pendentif khamsa", category: "bijoux-accessoires", price: 2200, stock: 10, materials: "Métal argenté", dimensions: "Chaîne 45 cm", description: "Pendentif khamsa gravé de motifs amazighs." },
+  { name: "Bracelet artisanal perlé", category: "bijoux-accessoires", price: 1500, stock: 12, isNewArrival: true, materials: "Perles, fil ciré", dimensions: "Ajustable", description: "Bracelet monté à la main." },
+  { name: "Savon artisanal à l'huile d'olive", category: "cosmetiques-naturels", price: 600, stock: 40, materials: "Huile d'olive", dimensions: "100 g", description: "Savon doux fabriqué en petite quantité." },
+  { name: "Baume nourrissant pour le corps", category: "cosmetiques-naturels", price: 1400, stock: 20, materials: "Ingrédients naturels", dimensions: "50 ml", description: "Baume de soin artisanal." },
+  { name: "Coffret cadeau personnalisable", category: "cadeaux-entreprise", price: 7000, stock: 6, materials: "Selon composition", dimensions: "Sur commande", description: "Coffret d'objets artisanaux composé sur mesure." },
+  { name: "Magnets personnalisés (lot de 10)", category: "cadeaux-entreprise", price: 4500, stock: 9, materials: "Céramique", dimensions: "Environ 6 x 6 cm", description: "Lot de magnets en céramique peints à la main." },
+  { name: "Magnet porte de la Casbah", category: "pop-culture", price: 500, stock: 30, featured: true, materials: "Céramique peinte", dimensions: "Environ 7 x 5 cm", description: "Magnet illustrant une porte traditionnelle." },
+  { name: "Carnet illustré, motifs amazighs", category: "pop-culture", price: 900, stock: 25, isNewArrival: true, materials: "Papier recyclé", dimensions: "A5", description: "Carnet de papeterie célébrant le patrimoine algérien." },
+];
