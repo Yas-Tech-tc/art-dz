@@ -6,12 +6,16 @@ const userSchema = new mongoose.Schema(
     email: {
       type: String,
       required: true,
-      unique: true,
+      unique: true,  // Deux utilisateurs ne peuvent pas avoir le même e-mail
       lowercase: true,
       trim: true,
       maxlength: 254,
     },
-    passwordHash: { type: String, required: true, select: false },
+    passwordHash: { 
+      type: String, 
+      required: true, 
+      select: false // Exclut ce champ des requêtes par défaut
+       },
   },
   {
     timestamps: true,
