@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { validate } from "../middlewares/validate.js";
-import { idParam, listProductsQuery } from "../validators/product.validators.js";
+import { idParam, listProductsQuery,createProductSchema,
+  updateProductSchema,} from "../validators/product.validators.js";
 import * as productController from "../controllers/product.controller.js";
 
 // Créer un nouveau routeur Express
