@@ -2,48 +2,46 @@ import { Product } from "../models/Product.js";
 import { AppError } from "../utils/AppError.js";
 import { escapeRegex } from "../utils/escapeRegex.js";
 
+
 // Définir les méthodes de tri autorisées
 const SORTS = {
-  // Trier par date de création, du plus récent au plus ancien
-  newest: { createdAt: -1, _id: -1 },
-
-  // Trier par prix, du moins cher au plus cher
-  "price-asc": { price: 1, _id: 1 },
-
-  // Trier par prix, du plus cher au moins cher
-  "price-desc": { price: -1, _id: 1 },
-
-  // Trier par nom, dans l'ordre alphabétique
-  name: { name: 1, _id: 1 },
+  newest: { createdAt: -1, _id: -1 }, // Du plus récent au plus ancien
+  "price-asc": { price: 1, _id: 1 },  // Du moins cher au plus cher
+  "price-desc": { price: -1, _id: 1 }, // Du plus cher au moins cher
+  name: { name: 1, _id: 1 },          // Ordre alphabétique
 };
 
-// Fonction pour récupérer une liste de produits
-// Elle reçoit les paramètres de pagination, recherche et tri
+
+// Créer une fonction qui retourne une erreur 404 si le produit n'existe pas
+const productNotFound = () => new AppError(404, "PRODUCT_NOT_FOUND", "Produit introuvable.");
+
+
+// Fonction pour récupérer la liste des produits avec recherche, filtres, tri et pagination
 export async function listProducts({ page, limit, category, q, sort }) {
 
-  // Créer un objet vide qui contiendra les conditions de recherche
+  // Créer un objet qui contiendra les conditions de recherche
   const filter = {};
 
-  // Si une catégorie est fournie, ajouter cette condition au filtre
+  // Ajouter la catégorie au filtre si elle est fournie
   if (category) filter.category = category;
 
-  // Si un mot-clé est fourni, effectuer une recherche
+  // Vérifier si un mot-clé de recherche est fourni
   if (q) {
 
-    // Créer une expression régulière sans tenir compte des majuscules
+    // Créer une Regex pour rechercher le mot sans distinguer majuscules et minuscules
     const regex = new RegExp(escapeRegex(q), "i");
 
-    // Chercher le mot dans le nom OU dans la description du produit
+    // Chercher le mot dans le nom OU dans la description
     filter.$or = [{ name: regex }, { description: regex }];
   }
 
   // Exécuter les deux requêtes MongoDB en parallèle
   const [items, total] = await Promise.all([
 
-    // Rechercher les produits qui respectent les conditions du filtre
+    // Récupérer les produits correspondant au filtre
     Product.find(filter)
 
-      // Appliquer le tri choisi par l'utilisateur
+      // Appliquer le tri choisi
       .sort(SORTS[sort])
 
       // Ignorer les produits des pages précédentes
@@ -52,37 +50,67 @@ export async function listProducts({ page, limit, category, q, sort }) {
       // Limiter le nombre de produits récupérés
       .limit(limit),
 
-    // Compter tous les produits correspondant au filtre
+    // Compter le nombre total de produits correspondant au filtre
     Product.countDocuments(filter),
   ]);
 
   // Retourner les produits et les informations de pagination
-  return {
-    items,                         // Liste des produits de la page actuelle
-    page,                          // Numéro de la page actuelle
-    limit,                         // Nombre maximum de produits par page
-    total,                         // Nombre total de produits trouvés
-    pages: Math.ceil(total / limit) // Nombre total de pages
-  };
+  return { items, page, limit, total, pages: Math.ceil(total / limit) };
 }
+
 
 // Fonction pour récupérer un seul produit grâce à son ID
 export async function getProduct(id) {
 
-  // Rechercher le produit dans MongoDB à partir de son identifiant
+  // Rechercher le produit dans MongoDB par son ID
   const product = await Product.findById(id);
 
-  // Vérifier si le produit n'existe pas
-  if (!product) {
+  // Si le produit n'existe pas, lancer une erreur 404
+  if (!product) throw productNotFound();
 
-    // Lancer une erreur HTTP 404 si le produit est introuvable
-    throw new AppError(
-      404,
-      "PRODUCT_NOT_FOUND",
-      "Produit introuvable."
-    );
-  }
-
-  // Si le produit existe, le retourner
+  // Retourner le produit trouvé
   return product;
+}
+
+
+// Fonction pour créer un nouveau produit dans MongoDB
+export function createProduct(data) {
+
+  // Enregistrer le produit avec les données reçues
+  return Product.create(data);
+}
+
+
+// Fonction pour modifier un produit existant
+export async function updateProduct(id, data) {
+
+  // Rechercher le produit par son ID et appliquer les modifications
+  const product = await Product.findByIdAndUpdate(
+    id,
+
+    // $set permet de modifier uniquement les champs fournis dans data
+    { $set: data },
+
+    {
+      returnDocument: "after", // Retourner le produit après sa modification
+      runValidators: true      // Vérifier les données avec les validateurs du modèle
+    }
+  );
+
+  // Si aucun produit n'a été trouvé, lancer une erreur 404
+  if (!product) throw productNotFound();
+
+  // Retourner le produit modifié
+  return product;
+}
+
+
+// Fonction pour supprimer un produit grâce à son ID
+export async function deleteProduct(id) {
+
+  // Rechercher le produit par son ID et le supprimer de MongoDB
+  const product = await Product.findByIdAndDelete(id);
+
+  // Si aucun produit n'a été trouvé, lancer une erreur 404
+  if (!product) throw productNotFound();
 }

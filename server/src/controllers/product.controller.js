@@ -11,3 +11,20 @@ export async function getOne(req, res) {
   const product = await productService.getProduct(req.valid.params.id);
   res.status(200).json({ success: true, data: { product } });
 }
+
+export async function create(req, res) {
+  const product = await productService.createProduct(req.valid.body);
+  res.status(201).json({ success: true, data: { product } });
+}
+
+export async function update(req, res) {
+  const product = await productService.updateProduct(req.valid.params.id, req.valid.body);
+  res.status(200).json({ success: true, data: { product } });
+}
+
+export async function remove(req, res) {
+  await productService.deleteProduct(req.valid.params.id);
+  res.status(200).json({ success: true, data: { message: "Produit supprimé." } });
+}
+
+

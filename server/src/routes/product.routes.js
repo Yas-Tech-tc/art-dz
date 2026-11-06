@@ -14,5 +14,9 @@ router.get("/", validate(listProductsQuery, "query"), productController.list);
 // Valider d'abord l'ID reçu dans l'URL, puis appeler le contrôleur getOne
 router.get("/:id", validate(idParam, "params"), productController.getOne);
 
+router.post("/", validate(createProductSchema), productController.create); 
+router.put("/:id", validate(idParam, "params"), validate(updateProductSchema), productController.update);
+router.delete("/:id", validate(idParam, "params"), productController.remove);
+
 // Exporter le routeur pour l'utiliser dans l'application Express
 export default router;
