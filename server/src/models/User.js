@@ -16,6 +16,10 @@ const userSchema = new mongoose.Schema(
       required: true, 
       select: false // Exclut ce champ des requêtes par défaut
        },
+       role: { type: String,
+       enum: ["user", "admin"], 
+       default: "user", 
+       immutable: true }, //Mongoose refuse de modifier ce champ après la création
   },
   {
     timestamps: true,

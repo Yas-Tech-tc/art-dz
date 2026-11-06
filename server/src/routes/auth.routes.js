@@ -1,17 +1,19 @@
 import { Router } from "express";
 import { validate } from "../middlewares/validate.js";
-import { registerSchema } from "../validators/auth.validators.js";
+import { authenticate } from "../middlewares/auth.js";
+import { registerSchema, loginSchema } from "../validators/auth.validators.js";
 import * as authController from "../controllers/auth.controller.js";
 
-// Create a new Express router to manage authentication routes.
 const router = Router();
 
-// POST route for user registration.
-router.post(
-  "/register",
-  validate(registerSchema), //validate(registerSchema): checks that the submitted data is valid
-  authController.register //authController.register: handles the registration request
-);
+// Route d'inscription : valide les données puis appelle le controller
+router.post("/register", validate(registerSchema), authController.register);
 
-// Export the router so it can be used in the main application.
+// Route de connexion : valide les identifiants puis appelle le controller
+router.post("/login", validate(loginSchema), authController.login);
+
+// Route protégée : vérifie le JWT avant de récupérer les informations de l'utilisateur
+router.get("/me", authenticate, authController.me);
+
+// Exporte le routeur pour l'utiliser dans l'application principale
 export default router;

@@ -34,3 +34,10 @@ export const registerSchema = z
     password,                              // Apply the password validation rules.
   })
   .strict(); // Reject any additional fields not defined in this schema.
+
+  export const loginSchema = z
+  .object({
+    email,
+    password: z.string().min(1).max(72),
+  })
+  .strict();
