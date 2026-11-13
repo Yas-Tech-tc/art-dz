@@ -50,7 +50,8 @@ Champ calculé : `inStock`.
 | GET | `/api/health` | Public |
 
 Codes utilisés : 200, 201, 400, 401, 403, 404, 409, 413, 429, 500, 503.
-Format d'erreur unique : `{ "success": false, "error": { "code", "message" } }`.
+Format d'erreur unique : 
+`{ "success": false, "error": { "code", "message" } }`.
 
 ## ⚠️ Pour tester l'écriture des produits (important)
 
