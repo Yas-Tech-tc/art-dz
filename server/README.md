@@ -1,7 +1,4 @@
-# Art-Z API — Backend e-commerce
-
-**Étudiant :** [Prénom Nom]
-**Module :** WAMD, TD-TP 3, ENSTA, S1 2026
+# Art-Dz API — Backend e-commerce
 
 ## Description
 
