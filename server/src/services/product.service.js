@@ -12,7 +12,7 @@ const SORTS = {
 };
 
 
-// Créer une fonction qui retourne une erreur 404 si le produit n'existe pas
+// une fonction qui retourne une erreur 404 si le produit n'existe pas
 const productNotFound = () => new AppError(404, "PRODUCT_NOT_FOUND", "Produit introuvable.");
 
 

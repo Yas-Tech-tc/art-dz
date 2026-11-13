@@ -5,4 +5,4 @@ export const allowedOrigins = (process.env.CORS_ORIGINS ?? defaults)
   .map((origin) => origin.trim())
   .filter(Boolean);
   //On lit les origines autorisées dans .env, séparées par des virgules
-  //si rien n’est défini, on autorise ton frontend Vite (http://localhost:5173).
+  //si rien n’est défini, autorise le frontend Vite (http://localhost:5173).

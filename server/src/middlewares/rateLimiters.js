@@ -18,7 +18,7 @@ function limiter(limit, message, windowMs = FIFTEEN_MINUTES) {
       });
     },
   });
-}
+} 
 
 // Limite générale : 100 requêtes toutes les 15 minutes par IP.
 export const generalLimiter = limiter(
