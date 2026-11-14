@@ -1,6 +1,6 @@
 # Art-Dz API — Backend e-commerce
 
-**API en ligne :** [https://art-z-api.onrender.com//api/health] *(le premier appel peut prendre 30 à 60 secondes : l'hébergement gratuit se met en veille)*
+**API en ligne :** [https://art-z-api.onrender.com/api/health] *(le premier appel peut prendre 30 à 60 secondes : l'hébergement gratuit se met en veille)*
 
 ## Description
 
