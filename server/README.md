@@ -1,5 +1,7 @@
 # Art-Dz API — Backend e-commerce
 
+**API en ligne :** [https://art-z-api.onrender.com//api/health] *(le premier appel peut prendre 30 à 60 secondes : l'hébergement gratuit se met en veille)*
+
 ## Description
 
 API REST (Node.js, Express, MongoDB) pour la boutique React/Redux du TD-TP 2.
@@ -132,3 +134,15 @@ npm run dev              # http://localhost:3000
 | `GOOGLE_CLIENT_ID` | identifiant client OAuth 2.0 (facultatif) |
 
 Ne jamais publier le fichier `.env`.
+
+## Tests
+
+Tests réalisés avec Postman (captures dans `server/screenshots/`) : inscription valide et invalide,
+e-mail déjà utilisé (409), liste et détail des produits, requêtes sans jeton ou avec jeton, identifiant ou données invalides (400),injection refusée,
+limitation de débit (429), test OAuth 2.0.
+
+## Déploiement
+
+API déployée sur Render (service web, dossier `server`), base sur MongoDB Atlas.
+Les secrets sont définis dans les variables d'environnement de l'hébergeur,
+jamais dans le dépôt.
