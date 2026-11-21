@@ -7,7 +7,7 @@ import { formatPrice } from "../utils/formatPrice";
 
 function CartItem({ product, quantity }) {
   const dispatch = useDispatch();
-  const mainImage = product.images?.[0] || product.imageUrl;
+  const mainImage = product.images?.at(0) || product.imageUrl;
 
   return (
     <li className="flex gap-4 border-b border-night/10 py-5">

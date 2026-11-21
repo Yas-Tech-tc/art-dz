@@ -32,7 +32,12 @@ app.use(
   })
 );
 
-// Applique la limitation générale des requêtes à toutes les routes /api.
+// Route health AVANT le rate limiter pour que Render puisse toujours vérifier le serveur.
+app.get("/api/health", (req, res) => {
+  res.status(200).json({ success: true, data: { status: "ok" } });
+});
+
+// Applique la limitation générale des requêtes à toutes les autres routes /api.
 app.use("/api", generalLimiter);
 
 // Permet à Express de lire les données JSON (maximum 10 Ko).

@@ -1,13 +1,8 @@
-/**
- * Traduit une erreur RTK Query en un objet lisible :
- * { message: string, fieldErrors: Record<string, string>, status: number | string }
- */
 export function parseApiError(err) {
   if (!err) {
     return { message: "Une erreur inattendue est survenue.", fieldErrors: {}, status: null };
   }
 
-  // 1. Erreur réseau ou dépassement de délai (serveur éteint, hors ligne, CORS)
   if (err.status === "FETCH_ERROR") {
     return {
       message: "Impossible de joindre le serveur. Vérifiez votre connexion ou réessayez.",
@@ -28,10 +23,9 @@ export function parseApiError(err) {
   const apiError = err.data?.error || {};
   const fieldErrors = {};
 
-  // Extraction des erreurs champ par champ (ex: Zod / validation 400)
   if (Array.isArray(apiError.details)) {
     for (const item of apiError.details) {
-      const key = item.field || item.path?.[0];
+      const key = item.field || (Array.isArray(item.path) ? item.path.at(0) : undefined);
       if (key && item.message) {
         fieldErrors[key] = item.message;
       }
@@ -40,7 +34,6 @@ export function parseApiError(err) {
     Object.assign(fieldErrors, apiError.details);
   }
 
-  // 2. Correspondance par code HTTP
   switch (status) {
     case 400:
       return {

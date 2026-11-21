@@ -10,7 +10,7 @@ import { getCategoryName } from "../data/categories";
 function ProductCard({ product }) {
   const dispatch = useDispatch();
   const { id, name, price, category, images = [], imageUrl, isNewArrival, isNew, inStock } = product;
-  const mainImage = images[0] || imageUrl;
+  const mainImage = images.at(0) || imageUrl;
   const showNewBadge = isNewArrival ?? isNew;
 
   return (
