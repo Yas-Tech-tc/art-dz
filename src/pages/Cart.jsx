@@ -5,6 +5,8 @@ import Container from "../components/Container";
 import SectionTitle from "../components/SectionTitle";
 import Button from "../components/Button";
 import CartItem from "../components/CartItem";
+import LoadingState from "../components/LoadingState";
+import ErrorState from "../components/ErrorState";
 import { clearCart, pruneInvalidItems, selectCartItems } from "../store/cartSlice";
 import { useGetProductsQuery } from "../api/api";
 import { formatPrice } from "../utils/formatPrice";
@@ -14,7 +16,7 @@ function Cart() {
   const items = useSelector(selectCartItems);
   const [ordered, setOrdered] = useState(false);
 
-  const { data, isLoading } = useGetProductsQuery({ limit: 100 });
+  const { data, isLoading, isError, error, refetch } = useGetProductsQuery({ limit: 100 });
   const products = data?.items ?? [];
 
   useEffect(() => {
@@ -25,8 +27,16 @@ function Cart() {
 
   if (isLoading && items.length > 0) {
     return (
-      <Container className="py-16 text-center">
-        <p>Chargement de votre panier...</p>
+      <Container className="py-16">
+        <LoadingState message="Chargement de votre panier..." />
+      </Container>
+    );
+  }
+
+  if (isError && items.length > 0) {
+    return (
+      <Container className="py-16">
+        <ErrorState error={error} onRetry={refetch} />
       </Container>
     );
   }

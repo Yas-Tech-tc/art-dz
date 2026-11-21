@@ -4,13 +4,15 @@ import { useDispatch, useSelector } from "react-redux";
 import Container from "../components/Container";
 import SectionTitle from "../components/SectionTitle";
 import ProductGrid from "../components/ProductGrid";
+import LoadingState from "../components/LoadingState";
+import ErrorState from "../components/ErrorState";
 import { pruneInvalidFavorites, selectFavoriteIds } from "../store/favoritesSlice";
 import { useGetProductsQuery } from "../api/api";
 
 function Favorites() {
   const dispatch = useDispatch();
   const ids = useSelector(selectFavoriteIds);
-  const { data, isLoading } = useGetProductsQuery({ limit: 100 });
+  const { data, isLoading, isError, error, refetch } = useGetProductsQuery({ limit: 100 });
   const products = data?.items ?? [];
 
   useEffect(() => {
@@ -24,7 +26,15 @@ function Favorites() {
   if (isLoading && ids.length > 0) {
     return (
       <Container className="py-10">
-        <p>Chargement de vos favoris...</p>
+        <LoadingState message="Chargement de vos favoris..." />
+      </Container>
+    );
+  }
+
+  if (isError && ids.length > 0) {
+    return (
+      <Container className="py-10">
+        <ErrorState error={error} onRetry={refetch} />
       </Container>
     );
   }

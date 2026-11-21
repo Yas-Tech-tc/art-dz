@@ -3,6 +3,8 @@ import Container from "../components/Container";
 import SectionTitle from "../components/SectionTitle";
 import CategoryFilter from "../components/CategoryFilter";
 import ProductGrid from "../components/ProductGrid";
+import LoadingState from "../components/LoadingState";
+import ErrorState from "../components/ErrorState";
 import { useGetProductsQuery } from "../api/api";
 import { categories } from "../data/categories";
 
@@ -30,7 +32,7 @@ function Shop() {
   if (query.trim()) apiParams.q = query.trim();
   if (SORT_MAP[sort]) apiParams.sort = SORT_MAP[sort];
 
-  const { data, isLoading, isError } = useGetProductsQuery(apiParams);
+  const { data, isLoading, isError, error, refetch } = useGetProductsQuery(apiParams);
   const list = data?.items ?? [];
 
   return (
@@ -71,9 +73,9 @@ function Shop() {
       />
 
       {isLoading ? (
-        <p className="py-8">Chargement des produits...</p>
+        <LoadingState message="Chargement de la boutique..." />
       ) : isError ? (
-        <p className="py-8 text-terracotta">Impossible de charger les produits.</p>
+        <ErrorState error={error} onRetry={refetch} />
       ) : (
         <ProductGrid products={list} />
       )}

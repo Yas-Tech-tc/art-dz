@@ -3,6 +3,8 @@ import Container from "../components/Container";
 import SectionTitle from "../components/SectionTitle";
 import ProductGrid from "../components/ProductGrid";
 import PatternDivider from "../components/PatternDivider";
+import LoadingState from "../components/LoadingState";
+import ErrorState from "../components/ErrorState";
 import { categories } from "../data/categories";
 import { useGetProductsQuery } from "../api/api";
 
@@ -10,7 +12,7 @@ const linkButton =
   "inline-flex min-h-12 items-center rounded-full bg-terracotta px-8 font-bold text-white hover:bg-terracotta-dark";
 
 function Home() {
-  const { data, isLoading, isError } = useGetProductsQuery({ limit: 50 });
+  const { data, isLoading, isError, error, refetch } = useGetProductsQuery({ limit: 50 });
   const products = data?.items ?? [];
   const featured = products.filter((p) => p.featured).slice(0, 4);
 
@@ -80,9 +82,9 @@ function Home() {
         </div>
 
         {isLoading ? (
-          <p className="py-8">Chargement des produits vedettes...</p>
+          <LoadingState message="Chargement des produits vedettes..." />
         ) : isError ? (
-          <p className="py-8 text-terracotta">Impossible de charger les produits.</p>
+          <ErrorState error={error} onRetry={refetch} />
         ) : (
           <ProductGrid products={featured} />
         )}

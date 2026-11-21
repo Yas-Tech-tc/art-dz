@@ -7,6 +7,8 @@ import ProductGallery from "../components/ProductGallery";
 import QuantitySelector from "../components/QuantitySelector";
 import SectionTitle from "../components/SectionTitle";
 import ProductGrid from "../components/ProductGrid";
+import LoadingState from "../components/LoadingState";
+import ErrorState from "../components/ErrorState";
 import { useGetProductByIdQuery, useGetProductsQuery } from "../api/api";
 import { getCategoryName } from "../data/categories";
 import { formatPrice } from "../utils/formatPrice";
@@ -100,12 +102,12 @@ function ProductView({ product }) {
 
 function ProductDetail() {
   const { id } = useParams();
-  const { data: product, isLoading, isError } = useGetProductByIdQuery(id);
+  const { data: product, isLoading, isError, error, refetch } = useGetProductByIdQuery(id);
 
   if (isLoading) {
     return (
       <Container className="py-16">
-        <p>Chargement du produit...</p>
+        <LoadingState message="Chargement du produit..." />
       </Container>
     );
   }
@@ -113,9 +115,9 @@ function ProductDetail() {
   if (isError || !product) {
     return (
       <Container className="py-16">
-        <h1 className="text-3xl">Produit introuvable</h1>
+        <ErrorState error={error} onRetry={refetch} />
         <Link to="/boutique" className="mt-4 inline-block font-bold text-terracotta">
-          Retour à la boutique
+          ← Retour à la boutique
         </Link>
       </Container>
     );
