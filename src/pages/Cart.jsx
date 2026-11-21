@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Container from "../components/Container";
 import SectionTitle from "../components/SectionTitle";
@@ -8,12 +8,17 @@ import CartItem from "../components/CartItem";
 import LoadingState from "../components/LoadingState";
 import ErrorState from "../components/ErrorState";
 import { clearCart, pruneInvalidItems, selectCartItems } from "../store/cartSlice";
+import { selectIsAuthenticated } from "../store/authSlice";
 import { useGetProductsQuery } from "../api/api";
 import { formatPrice } from "../utils/formatPrice";
 
 function Cart() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const items = useSelector(selectCartItems);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
   const [ordered, setOrdered] = useState(false);
 
   const { data, isLoading, isError, error, refetch } = useGetProductsQuery({ limit: 100 });
@@ -51,6 +56,10 @@ function Cart() {
   const total = lines.reduce((sum, line) => sum + line.product.price * line.quantity, 0);
 
   function handleOrder() {
+    if (!isAuthenticated) {
+      navigate("/connexion", { state: { from: location } });
+      return;
+    }
     dispatch(clearCart());
     setOrdered(true);
   }
@@ -102,7 +111,7 @@ function Cart() {
           </dl>
 
           <Button onClick={handleOrder} className="mt-6 w-full">
-            Valider la commande
+            {isAuthenticated ? "Valider la commande" : "Se connecter pour commander"}
           </Button>
           <button
             onClick={() => dispatch(clearCart())}
