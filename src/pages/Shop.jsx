@@ -3,12 +3,14 @@ import Container from "../components/Container";
 import SectionTitle from "../components/SectionTitle";
 import CategoryFilter from "../components/CategoryFilter";
 import ProductGrid from "../components/ProductGrid";
-import { products } from "../data/products";
+import { useGetProductsQuery } from "../api/api";
 import { categories } from "../data/categories";
 
-function normalize(text) {
-  return text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-}
+const SORT_MAP = {
+  nouveau: "newest",
+  "prix-asc": "price-asc",
+  "prix-desc": "price-desc",
+};
 
 function Shop() {
   const [params, setParams] = useSearchParams();
@@ -23,20 +25,17 @@ function Shop() {
     setParams(next, { replace });
   }
 
-  let list = selected === "all" ? products : products.filter((p) => p.category === selected);
+  const apiParams = { limit: 50 };
+  if (selected !== "all") apiParams.category = selected;
+  if (query.trim()) apiParams.q = query.trim();
+  if (SORT_MAP[sort]) apiParams.sort = SORT_MAP[sort];
 
-  if (query.trim()) {
-    const q = normalize(query.trim());
-    list = list.filter((p) => normalize(`${p.name} ${p.description}`).includes(q));
-  }
-
-  if (sort === "prix-asc") list = [...list].sort((a, b) => a.price - b.price);
-  if (sort === "prix-desc") list = [...list].sort((a, b) => b.price - a.price);
-  if (sort === "nouveau") list = [...list].sort((a, b) => Number(b.isNew) - Number(a.isNew));
+  const { data, isLoading, isError } = useGetProductsQuery(apiParams);
+  const list = data?.items ?? [];
 
   return (
     <Container className="py-10">
-      <SectionTitle title="Notre boutique" subtitle={`${list.length} produit(s)`} />
+      <SectionTitle title="Notre boutique" subtitle={`${data?.total ?? list.length} produit(s)`} />
 
       <div className="mb-6 flex flex-col gap-3 sm:flex-row">
         <label className="flex-1">
@@ -70,7 +69,14 @@ function Shop() {
         selected={selected}
         onSelect={(id) => update("categorie", id === "all" ? "" : id)}
       />
-      <ProductGrid products={list} />
+
+      {isLoading ? (
+        <p className="py-8">Chargement des produits...</p>
+      ) : isError ? (
+        <p className="py-8 text-terracotta">Impossible de charger les produits.</p>
+      ) : (
+        <ProductGrid products={list} />
+      )}
     </Container>
   );
 }

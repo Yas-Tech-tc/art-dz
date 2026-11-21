@@ -7,12 +7,13 @@ import { formatPrice } from "../utils/formatPrice";
 
 function CartItem({ product, quantity }) {
   const dispatch = useDispatch();
+  const mainImage = product.images?.[0] || product.imageUrl;
 
   return (
     <li className="flex gap-4 border-b border-night/10 py-5">
       <Link to={`/produit/${product.id}`} className="h-24 w-24 shrink-0 sm:h-28 sm:w-28">
         <ProductImage
-          src={product.images[0]}
+          src={mainImage}
           alt={product.name}
           className="h-full w-full rounded-xl"
         />

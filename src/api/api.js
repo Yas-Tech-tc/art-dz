@@ -26,9 +26,9 @@ export const api = createApi({
       }),
       transformResponse: (response) => response.data,
       providesTags: (result) =>
-        result?.products
+        result?.items
           ? [
-              ...result.products.map(({ _id }) => ({ type: "Product", id: _id })),
+              ...result.items.map(({ id }) => ({ type: "Product", id })),
               { type: "Product", id: "LIST" },
             ]
           : [{ type: "Product", id: "LIST" }],

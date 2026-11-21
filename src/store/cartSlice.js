@@ -1,19 +1,19 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { products } from "../data/products";
 import { loadFromStorage } from "../utils/storage";
 
 const MAX_QUANTITY = 10;
+const isMongoId = (id) => typeof id === "string" && /^[a-f0-9]{24}$/i.test(id);
+
 function loadItems() {
   const saved = loadFromStorage("art-dz:cart", []);
   if (!Array.isArray(saved)) return [];
 
   return saved.filter(
     (item) =>
-      Number.isInteger(item?.id) &&
+      isMongoId(item?.id) &&
       Number.isInteger(item?.quantity) &&
       item.quantity >= 1 &&
-      item.quantity <= MAX_QUANTITY &&
-      products.some((p) => p.id === item.id)
+      item.quantity <= MAX_QUANTITY
   );
 }
 
@@ -42,23 +42,22 @@ const cartSlice = createSlice({
       if (item) item.quantity = Math.min(Math.max(quantity, 1), MAX_QUANTITY);
     },
 
+    pruneInvalidItems(state, action) {
+      const validIds = new Set(action.payload);
+      state.items = state.items.filter((item) => validIds.has(item.id));
+    },
+
     clearCart(state) {
       state.items = [];
     },
   },
 });
 
-export const { addItem, removeItem, setQuantity, clearCart } = cartSlice.actions;
+export const { addItem, removeItem, setQuantity, pruneInvalidItems, clearCart } = cartSlice.actions;
 
 export const selectCartItems = (state) => state.cart.items;
 
 export const selectCartCount = (state) =>
   state.cart.items.reduce((total, item) => total + item.quantity, 0);
-
-export const selectCartTotal = (state) =>
-  state.cart.items.reduce((sum, item) => {
-    const product = products.find((p) => p.id === item.id);
-    return product ? sum + product.price * item.quantity : sum;
-  }, 0);
 
 export default cartSlice.reducer;

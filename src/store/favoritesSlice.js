@@ -1,11 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { products } from "../data/products";
 import { loadFromStorage } from "../utils/storage";
+
+const isMongoId = (id) => typeof id === "string" && /^[a-f0-9]{24}$/i.test(id);
 
 function loadIds() {
   const saved = loadFromStorage("art-dz:favorites", []);
   if (!Array.isArray(saved)) return [];
-  return saved.filter((id) => products.some((p) => p.id === id));
+  return saved.filter(isMongoId);
 }
 
 const favoritesSlice = createSlice({
@@ -20,9 +21,13 @@ const favoritesSlice = createSlice({
         state.ids.push(id);
       }
     },
+    pruneInvalidFavorites(state, action) {
+      const validIds = new Set(action.payload);
+      state.ids = state.ids.filter((id) => validIds.has(id));
+    },
   },
 });
 
-export const { toggleFavorite } = favoritesSlice.actions;
+export const { toggleFavorite, pruneInvalidFavorites } = favoritesSlice.actions;
 export const selectFavoriteIds = (state) => state.favorites.ids;
 export default favoritesSlice.reducer;

@@ -1,14 +1,33 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Container from "../components/Container";
 import SectionTitle from "../components/SectionTitle";
 import ProductGrid from "../components/ProductGrid";
-import { selectFavoriteIds } from "../store/favoritesSlice";
-import { products } from "../data/products";
+import { pruneInvalidFavorites, selectFavoriteIds } from "../store/favoritesSlice";
+import { useGetProductsQuery } from "../api/api";
 
 function Favorites() {
+  const dispatch = useDispatch();
   const ids = useSelector(selectFavoriteIds);
+  const { data, isLoading } = useGetProductsQuery({ limit: 100 });
+  const products = data?.items ?? [];
+
+  useEffect(() => {
+    if (data?.items) {
+      dispatch(pruneInvalidFavorites(data.items.map((p) => p.id)));
+    }
+  }, [data, dispatch]);
+
   const list = products.filter((p) => ids.includes(p.id));
+
+  if (isLoading && ids.length > 0) {
+    return (
+      <Container className="py-10">
+        <p>Chargement de vos favoris...</p>
+      </Container>
+    );
+  }
 
   return (
     <Container className="py-10">

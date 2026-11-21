@@ -4,12 +4,14 @@ import SectionTitle from "../components/SectionTitle";
 import ProductGrid from "../components/ProductGrid";
 import PatternDivider from "../components/PatternDivider";
 import { categories } from "../data/categories";
-import { products } from "../data/products";
+import { useGetProductsQuery } from "../api/api";
 
 const linkButton =
   "inline-flex min-h-12 items-center rounded-full bg-terracotta px-8 font-bold text-white hover:bg-terracotta-dark";
 
 function Home() {
+  const { data, isLoading, isError } = useGetProductsQuery({ limit: 50 });
+  const products = data?.items ?? [];
   const featured = products.filter((p) => p.featured).slice(0, 4);
 
   return (
@@ -76,7 +78,14 @@ function Home() {
             Tout voir
           </Link>
         </div>
-        <ProductGrid products={featured} />
+
+        {isLoading ? (
+          <p className="py-8">Chargement des produits vedettes...</p>
+        ) : isError ? (
+          <p className="py-8 text-terracotta">Impossible de charger les produits.</p>
+        ) : (
+          <ProductGrid products={featured} />
+        )}
       </Container>
 
       {/* Bandeau */}

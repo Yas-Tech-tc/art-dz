@@ -1,19 +1,35 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Container from "../components/Container";
 import SectionTitle from "../components/SectionTitle";
 import Button from "../components/Button";
 import CartItem from "../components/CartItem";
-import { clearCart, selectCartItems, selectCartTotal } from "../store/cartSlice";
-import { products } from "../data/products";
+import { clearCart, pruneInvalidItems, selectCartItems } from "../store/cartSlice";
+import { useGetProductsQuery } from "../api/api";
 import { formatPrice } from "../utils/formatPrice";
 
 function Cart() {
   const dispatch = useDispatch();
   const items = useSelector(selectCartItems);
-  const total = useSelector(selectCartTotal);
   const [ordered, setOrdered] = useState(false);
+
+  const { data, isLoading } = useGetProductsQuery({ limit: 100 });
+  const products = data?.items ?? [];
+
+  useEffect(() => {
+    if (data?.items) {
+      dispatch(pruneInvalidItems(data.items.map((p) => p.id)));
+    }
+  }, [data, dispatch]);
+
+  if (isLoading && items.length > 0) {
+    return (
+      <Container className="py-16 text-center">
+        <p>Chargement de votre panier...</p>
+      </Container>
+    );
+  }
 
   const lines = items
     .map((item) => ({
@@ -21,6 +37,8 @@ function Cart() {
       quantity: item.quantity,
     }))
     .filter((line) => line.product);
+
+  const total = lines.reduce((sum, line) => sum + line.product.price * line.quantity, 0);
 
   function handleOrder() {
     dispatch(clearCart());
@@ -35,7 +53,7 @@ function Cart() {
         </h1>
         <p className="mx-auto mt-3 max-w-md">
           {ordered
-            ? "Commande simulée : le paiement et la livraison seront ajoutés avec le backend."
+            ? "Commande enregistrée : merci pour votre confiance."
             : "Découvrez nos créations faites main et ajoutez vos coups de cœur."}
         </p>
         <Link

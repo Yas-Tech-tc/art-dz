@@ -1,22 +1,23 @@
 import { useState } from "react";
 import ProductImage from "./ProductImage";
 
-function ProductGallery({ images, name }) {
+function ProductGallery({ images = [], name }) {
   const [current, setCurrent] = useState(0);
+  const safeImages = images.filter(Boolean);
 
   return (
     <div>
       <ProductImage
-        src={images[current]}
+        src={safeImages[current] || ""}
         alt={name}
         className="aspect-square w-full rounded-2xl"
       />
 
-      {images.length > 1 && (
+      {safeImages.length > 1 && (
         <div className="mt-3 flex gap-3">
-          {images.map((img, i) => (
+          {safeImages.map((img, i) => (
             <button
-              key={img}
+              key={`${img}-${i}`}
               onClick={() => setCurrent(i)}
               aria-label={`Voir la photo ${i + 1}`}
               aria-pressed={i === current}

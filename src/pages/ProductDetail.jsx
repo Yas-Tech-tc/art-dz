@@ -1,24 +1,35 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import Container from "../components/Container";
 import Button from "../components/Button";
 import ProductGallery from "../components/ProductGallery";
 import QuantitySelector from "../components/QuantitySelector";
 import SectionTitle from "../components/SectionTitle";
 import ProductGrid from "../components/ProductGrid";
-import { products } from "../data/products";
+import { useGetProductByIdQuery, useGetProductsQuery } from "../api/api";
 import { getCategoryName } from "../data/categories";
 import { formatPrice } from "../utils/formatPrice";
-import { useDispatch } from "react-redux";
 import { addItem } from "../store/cartSlice";
 
 function ProductView({ product }) {
   const [quantity, setQuantity] = useState(1);
   const dispatch = useDispatch();
 
-  const similar = products
-    .filter((p) => p.category === product.category && p.id !== product.id)
+  const { data: catData } = useGetProductsQuery({
+    category: product.category,
+    limit: 5,
+  });
+
+  const similar = (catData?.items ?? [])
+    .filter((p) => p.id !== product.id)
     .slice(0, 4);
+
+  const galleryImages = product.images?.length
+    ? product.images
+    : product.imageUrl
+      ? [product.imageUrl]
+      : [];
 
   function handleAdd() {
     dispatch(addItem({ id: product.id, quantity }));
@@ -37,7 +48,7 @@ function ProductView({ product }) {
       </nav>
 
       <div className="grid gap-8 md:grid-cols-2 lg:gap-12">
-        <ProductGallery images={product.images} name={product.name} />
+        <ProductGallery images={galleryImages} name={product.name} />
 
         <div>
           <p className="text-xs font-bold uppercase tracking-wide text-olive">
@@ -54,9 +65,9 @@ function ProductView({ product }) {
 
           <dl className="mt-5 grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 border-t border-night/10 pt-5">
             <dt className="font-bold">Matériaux</dt>
-            <dd>{product.materials}</dd> 
+            <dd>{product.materials || "Non précisé"}</dd>
             <dt className="font-bold">Dimensions</dt>
-            <dd>{product.dimensions}</dd>
+            <dd>{product.dimensions || "Non précisé"}</dd>
             <dt className="font-bold">Fabrication</dt>
             <dd>Fait main en Algérie</dd>
           </dl>
@@ -89,9 +100,17 @@ function ProductView({ product }) {
 
 function ProductDetail() {
   const { id } = useParams();
-  const product = products.find((p) => p.id === Number(id));
+  const { data: product, isLoading, isError } = useGetProductByIdQuery(id);
 
-  if (!product) {
+  if (isLoading) {
+    return (
+      <Container className="py-16">
+        <p>Chargement du produit...</p>
+      </Container>
+    );
+  }
+
+  if (isError || !product) {
     return (
       <Container className="py-16">
         <h1 className="text-3xl">Produit introuvable</h1>
