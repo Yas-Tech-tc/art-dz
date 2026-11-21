@@ -1,8 +1,9 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { logout } from "../store/authSlice";
 
-const baseQuery = fetchBaseQuery({
+const rawBaseQuery = fetchBaseQuery({
   baseUrl: import.meta.env.VITE_API_URL,
-  timeout: 65000, // 65s pour tolérer le réveil de Render au 1er appel
+  timeout: 65000,
   prepareHeaders: (headers, { getState }) => {
     const token = getState().auth?.token;
     if (token) {
@@ -12,14 +13,26 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
+const baseQueryWithAutoLogout = async (args, api, extraOptions) => {
+  const result = await rawBaseQuery(args, api, extraOptions);
+
+  // Si le serveur répond 401 (jeton expiré ou invalide), on déconnecte automatiquement
+  // (on exclut /auth/login pour ne pas vider l'état lors d'un simple échec de saisie)
+  const url = typeof args === "string" ? args : args?.url;
+  if (result.error?.status === 401 && url !== "/auth/login") {
+    api.dispatch(logout());
+  }
+
+  return result;
+};
+
 export const api = createApi({
   reducerPath: "api",
-  baseQuery,
+  baseQuery: baseQueryWithAutoLogout,
   tagTypes: ["Product", "User"],
   endpoints: (builder) => ({
     // --- PRODUITS ---
     getProducts: builder.query({
-      // params peut contenir { category, q, sort, page, limit }
       query: (params) => ({
         url: "/products",
         params,
@@ -90,7 +103,7 @@ export const api = createApi({
         method: "POST",
         body: credentials,
       }),
-      transformResponse: (response) => response.data, // { token, user }
+      transformResponse: (response) => response.data,
       invalidatesTags: ["User"],
     }),
 
@@ -102,7 +115,6 @@ export const api = createApi({
   }),
 });
 
-// Export des hooks générés automatiquement par RTK Query
 export const {
   useGetProductsQuery,
   useGetProductByIdQuery,
