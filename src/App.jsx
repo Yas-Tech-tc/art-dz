@@ -8,6 +8,8 @@ import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
 import NotFound from "./pages/NotFound";
 import Favorites from "./pages/Favorites";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 import { selectToken, setCredentials } from "./store/authSlice";
 import { useGetMeQuery } from "./api/api";
 
@@ -31,6 +33,8 @@ function App() {
         <Route path="/produit/:id" element={<ProductDetail />} />
         <Route path="/panier" element={<Cart />} />
         <Route path="/favoris" element={<Favorites />} />
+        <Route path="/connexion" element={<Login />} />
+        <Route path="/inscription" element={<Register />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
